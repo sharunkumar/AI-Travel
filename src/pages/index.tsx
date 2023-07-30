@@ -38,13 +38,8 @@ export default function Home() {
             <ModeToggle />
           </div>
         </nav>
-        <div className="grow overflow-y-auto">
-          <p className=" p-10 text-9xl">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Nihil
-            porro, debitis ex dolorum blanditiis reprehenderit nulla laboriosam
-            unde ipsum, iusto culpa expedita ducimus nostrum reiciendis illo,
-            quo consequuntur. Sint, doloribus.
-          </p>
+        <div className="flex grow items-end overflow-y-auto">
+          <p className=" p-10 text-9xl">Lorem</p>
         </div>
         <div className="">
           <p className="container p-8">
