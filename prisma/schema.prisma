@@ -64,3 +64,17 @@ model VerificationToken {
 
     @@unique([identifier, token])
 }
+
+model ChatMessage {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    role      String
+    content   String
+}
+
+model SystemRole {
+    id        Int      @id @default(0)
+    createdAt DateTime @default(now())
+    role      String   @default("system")
+    prompt    String
+}

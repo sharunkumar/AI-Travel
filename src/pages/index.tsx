@@ -6,17 +6,21 @@ import { ModeToggle } from "~/components/ui/mode-toggle";
 import { Textarea } from "~/components/ui/textarea";
 import { useState } from "react";
 import { ChatMessage } from "~/types/types";
+import { api } from "~/utils/api";
 
 export default function Home() {
   const { data: sessionData } = useSession();
-  const system_message: ChatMessage = {
-    role: "system",
-    content: `
+
+  const [messages, setMessages] = useState([] as ChatMessage[]);
+
+  const { data: system_message } = api.example.setSystemRole.useQuery(
+    `
     Imagine you are a seasoned travel advisor responsible for assisting globetrotters in planning their dream vacations. Your mission is to provide expert travel advice and itinerary recommendations tailored to their preferences and interests. Write a comprehensive travel guide covering must-visit destinations, local attractions, hidden gems, transportation options, budget tips, safety precautions, and cultural insights to ensure a memorable and enriching travel experience for your clients.
     Please structure your response in a well-formatted JSON format, ensuring it provides logical and coherent information to facilitate easy consumption and integration into travel planning applications.
-    `.trim(),
-  };
-  const [messages, setMessages] = useState([] as ChatMessage[]);
+    `.trim()
+  );
+
+  // console.log({ system_message });
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   function handleSend(e: unknown): void {
@@ -53,6 +57,7 @@ export default function Home() {
           </div>
         </nav>
         <div className="grow gap-10 overflow-y-auto px-96">
+          <div style={{ display: "none" }}>{system_message?.prompt}</div>
           {messages.map((msg) => {
             switch (msg.role) {
               case "user":

@@ -4,7 +4,6 @@ import {
   publicProcedure,
   protectedProcedure,
 } from "~/server/api/trpc";
-import { ChatMessage } from "~/types/types";
 
 export const exampleRouter = createTRPCRouter({
   hello: publicProcedure
@@ -36,5 +35,36 @@ export const exampleRouter = createTRPCRouter({
     )
     .query(({ input }) => {
       return input.messages;
+    }),
+
+  getCompletion: publicProcedure.input(z.string()).query(({ input, ctx }) => {
+    ctx.prisma.chatMessage.create({
+      data: {
+        role: "user",
+        content: input,
+      },
+    });
+
+    return ctx.prisma.chatMessage.findMany();
+  }),
+
+  setSystemRole: publicProcedure
+    .input(z.string())
+    .query(async ({ input, ctx }) => {
+      return await ctx.prisma.systemRole.upsert({
+        where: {
+          id: 0,
+        },
+        create: {
+          prompt: input,
+        },
+        update: {
+          prompt: input,
+        },
+        select: {
+          role: true,
+          prompt: true,
+        },
+      });
     }),
 });
