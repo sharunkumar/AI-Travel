@@ -37,7 +37,7 @@ export const gptRouter = createTRPCRouter({
   //     return input.messages;
   //   }),
 
-  getCompletion: publicProcedure
+  sendInput: publicProcedure
     .input(z.string())
     .mutation(async ({ input, ctx }) => {
       await ctx.prisma.chatMessage.create({

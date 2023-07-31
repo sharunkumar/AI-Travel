@@ -28,7 +28,7 @@ export default function Home() {
   const { data: messages, refetch: refetch_chats } =
     api.gpt.getChats.useQuery();
 
-  const completion = api.gpt.getCompletion.useMutation();
+  const completion = api.gpt.sendInput.useMutation();
 
   const clearChats = api.gpt.clearChats.useMutation();
 
