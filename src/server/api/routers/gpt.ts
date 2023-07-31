@@ -60,14 +60,14 @@ export const gptRouter = createTRPCRouter({
           id: 0,
         },
         create: {
-          prompt: input,
+          content: input,
         },
         update: {
-          prompt: input,
+          content: input,
         },
         select: {
           role: true,
-          prompt: true,
+          content: true,
         },
       });
     }),

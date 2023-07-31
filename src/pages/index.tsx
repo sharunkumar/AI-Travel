@@ -66,7 +66,7 @@ export default function Home() {
           </div>
         </nav>
         <div className="grow gap-10 overflow-y-auto px-96">
-          <div style={{ display: "none" }}>{system_message?.prompt}</div>
+          <div style={{ display: "none" }}>{system_message?.content}</div>
           {messages?.map((msg, idx) => {
             switch (msg.role) {
               case "user":

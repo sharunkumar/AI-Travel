@@ -76,5 +76,5 @@ model SystemRole {
     id        Int      @id @default(0)
     createdAt DateTime @default(now())
     role      String   @default("system")
-    prompt    String
+    content   String
 }
