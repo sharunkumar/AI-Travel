@@ -5,7 +5,7 @@ import { Button } from "~/components/ui/button";
 import { ModeToggle } from "~/components/ui/mode-toggle";
 import { Textarea } from "~/components/ui/textarea";
 import { api } from "~/utils/api";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 
 // const useMountEffect = (fun: any) => useEffect(fun, []);
 
@@ -29,6 +29,8 @@ export default function Home() {
     api.gpt.getChats.useQuery();
 
   const completion = api.gpt.getCompletion.useMutation();
+
+  const clearChats = api.gpt.clearChats.useMutation();
 
   const [text, setText] = useState("");
 
@@ -90,6 +92,7 @@ export default function Home() {
               disabled={text.trim() == ""}
               onClick={(e) => {
                 e.preventDefault();
+                setText("");
                 completion.mutate(text, {
                   onSuccess: async () => {
                     refetch_chats();
@@ -104,11 +107,10 @@ export default function Home() {
               size={"lg"}
               variant={"destructive"}
               className="grow"
-              disabled={text.trim() == ""}
               onClick={(e) => {
                 e.preventDefault();
-                completion.mutate(text, {
-                  onSuccess: async () => {
+                clearChats.mutate(undefined, {
+                  onSuccess: () => {
                     refetch_chats();
                   },
                 });

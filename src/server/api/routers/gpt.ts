@@ -48,6 +48,10 @@ export const gptRouter = createTRPCRouter({
       });
     }),
 
+  clearChats: publicProcedure.mutation(async ({ input, ctx }) => {
+    await ctx.prisma.chatMessage.deleteMany();
+  }),
+
   setSystemRole: publicProcedure
     .input(z.string())
     .query(async ({ input, ctx }) => {
