@@ -1,9 +1,10 @@
-export interface ChatMessage {
-    role: 'system' | 'user' | 'assistant'
-    content: string
-}
+import { RouterInputs } from "~/utils/api";
 
-export interface ErrorMessage {
-    code: string
-    message: string
-}
+// tie the server input to our type
+export type ChatMessage =
+  RouterInputs["example"]["getCompletions"]["messages"][0];
+
+// export interface ErrorMessage {
+//   code: string;
+//   message: string;
+// }

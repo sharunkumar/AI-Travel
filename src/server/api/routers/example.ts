@@ -4,6 +4,7 @@ import {
   publicProcedure,
   protectedProcedure,
 } from "~/server/api/trpc";
+import { ChatMessage } from "~/types/types";
 
 export const exampleRouter = createTRPCRouter({
   hello: publicProcedure
@@ -21,4 +22,19 @@ export const exampleRouter = createTRPCRouter({
   getSecretMessage: protectedProcedure.query(() => {
     return "you can now see this secret message!";
   }),
+
+  getCompletions: publicProcedure
+    .input(
+      z.object({
+        messages: z.array(
+          z.object({
+            role: z.enum(["system", "user", "assistant"]),
+            content: z.string(),
+          })
+        ),
+      })
+    )
+    .query(({ input }) => {
+      return input.messages;
+    }),
 });
