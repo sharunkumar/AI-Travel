@@ -18,7 +18,7 @@ export default function Home() {
 
   const { data: sessionData } = useSession();
 
-  const { data: system_message } = api.example.setSystemRole.useQuery(
+  const { data: system_message } = api.gpt.setSystemRole.useQuery(
     `
     Imagine you are a seasoned travel advisor responsible for assisting globetrotters in planning their dream vacations. Your mission is to provide expert travel advice and itinerary recommendations tailored to their preferences and interests. Write a comprehensive travel guide covering must-visit destinations, local attractions, hidden gems, transportation options, budget tips, safety precautions, and cultural insights to ensure a memorable and enriching travel experience for your clients.
     Please structure your response in a well-formatted JSON format, ensuring it provides logical and coherent information to facilitate easy consumption and integration into travel planning applications.
@@ -26,9 +26,9 @@ export default function Home() {
   );
 
   const { data: messages, refetch: refetch_chats } =
-    api.example.getChats.useQuery();
+    api.gpt.getChats.useQuery();
 
-  const completion = api.example.getCompletion.useMutation();
+  const completion = api.gpt.getCompletion.useMutation();
 
   const [text, setText] = useState("");
 
