@@ -1,10 +1,9 @@
 import { signIn, signOut, useSession } from "next-auth/react";
-import Head from "next/head";
+import { AIChatBubble, UserChatBubble } from "~/components/chat-bubbles";
 import { TextareaWithButton } from "~/components/textarea-with-button";
 import { Button } from "~/components/ui/button";
 import { ModeToggle } from "~/components/ui/mode-toggle";
-import { Textarea } from "~/components/ui/textarea";
-import { api } from "~/utils/api";
+import Head from "next/head";
 
 export default function Home() {
   const { data: sessionData } = useSession();
@@ -38,8 +37,14 @@ export default function Home() {
             <ModeToggle />
           </div>
         </nav>
-        <div className="flex grow items-end overflow-y-auto">
-          <p className=" p-10 text-9xl">Lorem</p>
+        <div className="grow gap-10 overflow-y-auto px-96">
+          <AIChatBubble
+            text="Lorem ipsum dolor sit amet consectetur, adipisicing elit. Esse magni
+            odio reiciendis quis, laudantium molestiae in libero soluta unde
+            commodi maiores corrupti dolorem, eius, mollitia cupiditate corporis
+            alias quo? Veritatis."
+          />
+          <UserChatBubble text="I'm ok what about you?" />
         </div>
         <div className="">
           <p className="container p-8">
