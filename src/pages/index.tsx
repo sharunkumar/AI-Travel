@@ -34,7 +34,7 @@ export default function Home() {
 
   const [text, setText] = useState("");
 
-  console.log({ messages });
+  // console.log({ messages });
 
   return (
     <>
