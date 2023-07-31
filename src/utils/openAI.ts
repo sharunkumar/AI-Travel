@@ -1,6 +1,6 @@
 import { createParser } from 'eventsource-parser'
 import type { ParsedEvent, ReconnectInterval } from 'eventsource-parser'
-import { ChatMessage } from '~/types/openAITypes'
+import { ChatMessage } from '~/types/types'
 import { env } from "~/env.mjs";
 
 const model = env.OPENAI_API_MODEL

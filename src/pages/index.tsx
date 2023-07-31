@@ -1,12 +1,27 @@
 import { signIn, signOut, useSession } from "next-auth/react";
 import { AIChatBubble, UserChatBubble } from "~/components/chat-bubbles";
-import { TextareaWithButton } from "~/components/textarea-with-button";
 import { Button } from "~/components/ui/button";
 import { ModeToggle } from "~/components/ui/mode-toggle";
 import Head from "next/head";
+import { Textarea } from "~/components/ui/textarea";
+import { useState } from "react";
+import { ChatMessage } from "~/types/types";
 
 export default function Home() {
   const { data: sessionData } = useSession();
+  const system_message: ChatMessage = {
+    role: "system",
+    content: `
+    Imagine you are a seasoned travel advisor responsible for assisting globetrotters in planning their dream vacations. Your mission is to provide expert travel advice and itinerary recommendations tailored to their preferences and interests. Write a comprehensive travel guide covering must-visit destinations, local attractions, hidden gems, transportation options, budget tips, safety precautions, and cultural insights to ensure a memorable and enriching travel experience for your clients.
+    Please structure your response in a well-formatted JSON format, ensuring it provides logical and coherent information to facilitate easy consumption and integration into travel planning applications.
+    `.trim(),
+  };
+  const [messages, setMessages] = useState([] as ChatMessage[]);
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  function handleSend(e: unknown): void {
+    console.log("Clicked");
+  }
 
   return (
     <>
@@ -38,18 +53,24 @@ export default function Home() {
           </div>
         </nav>
         <div className="grow gap-10 overflow-y-auto px-96">
-          <AIChatBubble
-            text="Lorem ipsum dolor sit amet consectetur, adipisicing elit. Esse magni
-            odio reiciendis quis, laudantium molestiae in libero soluta unde
-            commodi maiores corrupti dolorem, eius, mollitia cupiditate corporis
-            alias quo? Veritatis."
-          />
-          <UserChatBubble text="I'm ok what about you?" />
+          {messages.map((msg) => {
+            switch (msg.role) {
+              case "user":
+                return <UserChatBubble text={msg.content} />;
+              case "assistant":
+                return <AIChatBubble text={msg.content} />;
+            }
+
+            return <></>;
+          })}
         </div>
-        <div className="">
-          <p className="container p-8">
-            <TextareaWithButton />
-          </p>
+        <div className="container p-8">
+          <div className="flex flex-row items-center gap-2">
+            <Textarea placeholder="Type your message here." />
+            <Button size={"lg"} className="grow" onClick={handleSend}>
+              Send
+            </Button>
+          </div>
         </div>
       </main>
     </>
