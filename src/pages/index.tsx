@@ -4,14 +4,19 @@ import { AIChatBubble, UserChatBubble } from "~/components/chat-bubbles";
 import { Button } from "~/components/ui/button";
 import { ModeToggle } from "~/components/ui/mode-toggle";
 import { Textarea } from "~/components/ui/textarea";
-import { useState } from "react";
-import { ChatMessage } from "~/types/types";
 import { api } from "~/utils/api";
+import { useEffect, useRef, useState } from "react";
+
+// const useMountEffect = (fun: any) => useEffect(fun, []);
 
 export default function Home() {
-  const { data: sessionData } = useSession();
+  // const myRef = useRef(null);
 
-  const [messages, setMessages] = useState([] as ChatMessage[]);
+  // const executeScroll = () => myRef.current.scrollIntoView(); // run this function from an event handler or pass it to useEffect to execute scroll
+
+  // useMountEffect(executeScroll); // Scroll on mount
+
+  const { data: sessionData } = useSession();
 
   const { data: system_message } = api.example.setSystemRole.useQuery(
     `
@@ -20,12 +25,14 @@ export default function Home() {
     `.trim()
   );
 
-  // console.log({ system_message });
+  const { data: messages, refetch: refetch_chats } =
+    api.example.getChats.useQuery();
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  function handleSend(e: unknown): void {
-    console.log("Clicked");
-  }
+  const completion = api.example.getCompletion.useMutation();
+
+  const [text, setText] = useState("");
+
+  console.log({ messages });
 
   return (
     <>
@@ -58,22 +65,56 @@ export default function Home() {
         </nav>
         <div className="grow gap-10 overflow-y-auto px-96">
           <div style={{ display: "none" }}>{system_message?.prompt}</div>
-          {messages.map((msg) => {
+          {messages?.map((msg, idx) => {
             switch (msg.role) {
               case "user":
-                return <UserChatBubble text={msg.content} />;
+                return <UserChatBubble key={idx} text={msg.content} />;
               case "assistant":
-                return <AIChatBubble text={msg.content} />;
+                return <AIChatBubble key={idx} text={msg.content} />;
             }
 
             return <></>;
           })}
+          {/* <hr ref={myRef} /> */}
         </div>
         <div className="container p-8">
           <div className="flex flex-row items-center gap-2">
-            <Textarea placeholder="Type your message here." />
-            <Button size={"lg"} className="grow" onClick={handleSend}>
+            <Textarea
+              placeholder="Type your message here."
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+            />
+            <Button
+              size={"lg"}
+              className="grow"
+              disabled={text.trim() == ""}
+              onClick={(e) => {
+                e.preventDefault();
+                completion.mutate(text, {
+                  onSuccess: async () => {
+                    refetch_chats();
+                    // executeScroll();
+                  },
+                });
+              }}
+            >
               Send
+            </Button>
+            <Button
+              size={"lg"}
+              variant={"destructive"}
+              className="grow"
+              disabled={text.trim() == ""}
+              onClick={(e) => {
+                e.preventDefault();
+                completion.mutate(text, {
+                  onSuccess: async () => {
+                    refetch_chats();
+                  },
+                });
+              }}
+            >
+              Clear
             </Button>
           </div>
         </div>

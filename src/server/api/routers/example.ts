@@ -22,31 +22,31 @@ export const exampleRouter = createTRPCRouter({
     return "you can now see this secret message!";
   }),
 
-  getCompletions: publicProcedure
-    .input(
-      z.object({
-        messages: z.array(
-          z.object({
-            role: z.enum(["system", "user", "assistant"]),
-            content: z.string(),
-          })
-        ),
-      })
-    )
-    .query(({ input }) => {
-      return input.messages;
+  // getCompletions: publicProcedure
+  //   .input(
+  //     z.object({
+  //       messages: z.array(
+  //         z.object({
+  //           role: z.enum(["system", "user", "assistant"]),
+  //           content: z.string(),
+  //         })
+  //       ),
+  //     })
+  //   )
+  //   .query(({ input }) => {
+  //     return input.messages;
+  //   }),
+
+  getCompletion: publicProcedure
+    .input(z.string())
+    .mutation(async ({ input, ctx }) => {
+      await ctx.prisma.chatMessage.create({
+        data: {
+          role: "user",
+          content: input,
+        },
+      });
     }),
-
-  getCompletion: publicProcedure.input(z.string()).query(({ input, ctx }) => {
-    ctx.prisma.chatMessage.create({
-      data: {
-        role: "user",
-        content: input,
-      },
-    });
-
-    return ctx.prisma.chatMessage.findMany();
-  }),
 
   setSystemRole: publicProcedure
     .input(z.string())
@@ -67,4 +67,13 @@ export const exampleRouter = createTRPCRouter({
         },
       });
     }),
+
+  getChats: publicProcedure.query(({ ctx }) => {
+    return ctx.prisma.chatMessage.findMany({
+      select: {
+        role: true,
+        content: true,
+      },
+    });
+  }),
 });
