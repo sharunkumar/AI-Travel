@@ -4,6 +4,21 @@ import {
   publicProcedure,
   protectedProcedure,
 } from "~/server/api/trpc";
+import {
+  ChatCompletionRequestMessage,
+  ChatCompletionRequestMessageRoleEnum,
+  Configuration,
+  OpenAIApi,
+} from "openai";
+import { env } from "~/env.mjs";
+import { PrismaClient, Prisma } from "@prisma/client";
+import { DefaultArgs } from "@prisma/client/runtime/library";
+
+const configuration = new Configuration({
+  apiKey: env.OPENAI_API_KEY,
+});
+
+const openai = new OpenAIApi(configuration);
 
 export const gptRouter = createTRPCRouter({
   hello: publicProcedure
@@ -42,10 +57,12 @@ export const gptRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       await ctx.prisma.chatMessage.create({
         data: {
-          role: "user",
+          role: ChatCompletionRequestMessageRoleEnum.User,
           content: input,
         },
       });
+
+      await getOpenAiCompletion(ctx.prisma);
     }),
 
   clearChats: publicProcedure.mutation(async ({ input, ctx }) => {
@@ -81,3 +98,59 @@ export const gptRouter = createTRPCRouter({
     });
   }),
 });
+
+// function isRole(value: string): value is ChatCompletionRequestMessageRoleEnum {
+//   return Object.values<string>(ChatCompletionRequestMessageRoleEnum).includes(
+//     value
+//   );
+// }
+
+async function getOpenAiCompletion(
+  prisma: PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>
+) {
+  const sys = await prisma.systemRole.findFirst({
+    select: { role: true, content: true },
+  });
+
+  let msgs = [] as ChatCompletionRequestMessage[];
+
+  if (sys) msgs.push(sys as ChatCompletionRequestMessage);
+
+  let user_messages = await prisma.chatMessage.findMany({
+    select: {
+      role: true,
+      content: true,
+    },
+  });
+
+  let user_messages_2 = user_messages.map((m) => {
+    return {
+      role: m.role as ChatCompletionRequestMessageRoleEnum,
+      content: m.content,
+    } as ChatCompletionRequestMessage;
+  });
+
+  const chatCompletion = await openai.createChatCompletion({
+    model: env.OPENAI_API_MODEL,
+    messages: [sys as ChatCompletionRequestMessage, ...user_messages_2],
+    stream: false,
+  });
+
+  let ai_msg = chatCompletion.data.choices[0]?.message;
+
+  if (!ai_msg) return;
+
+  await prisma.chatMessage.create({
+    data: {
+      role: ai_msg.role,
+      content: ai_msg.content!,
+    },
+  });
+
+  // prisma.chatMessage.create({
+  //   data: {
+  //     role: chatCompletion.data.choices[0]?.message?.role,
+  //     content: chatCompletion.data.choices[0]?.message?.role || "",
+  //   },
+  // });
+}
