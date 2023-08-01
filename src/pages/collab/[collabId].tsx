@@ -31,7 +31,7 @@ export default function CollabPage() {
 
   // return <></>;
 
-  return (
+  return sesh ? (
     <>
       <Head>
         <title>AI Travel</title>
@@ -116,5 +116,9 @@ export default function CollabPage() {
         </>
       </main>
     </>
+  ) : (
+    <div className="flex min-h-screen grow items-center justify-center align-middle text-4xl">
+      Session not found / cancelled
+    </div>
   );
 }
