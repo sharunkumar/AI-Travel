@@ -19,7 +19,7 @@ export function AIChatBubble(props: { text: string }) {
         <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border-2 border-solid border-indigo-500 dark:bg-indigo-500">
           AI
         </div>
-        <div className="relative ml-3 rounded-xl bg-zinc-900 px-4 py-4 text-sm shadow">
+        <div className="relative ml-3 rounded-xl px-4 py-4 text-sm shadow dark:bg-zinc-900">
           <MemoizedReactMarkdown
             className="prose break-words dark:prose-invert sm:prose-sm md:prose-sm prose-p:leading-relaxed prose-pre:p-0"
             remarkPlugins={[remarkGfm, remarkMath]}
@@ -101,7 +101,7 @@ export function UserChatBubble(props: {
         <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border-2 border-solid border-indigo-800 dark:bg-indigo-800">
           {circle}
         </div>
-        <div className="relative mr-3 rounded-xl bg-zinc-900 px-4 py-4 text-sm shadow">
+        <div className="relative mr-3 rounded-xl px-4 py-4 text-sm shadow dark:bg-zinc-900">
           <MemoizedReactMarkdown
             className="prose break-words dark:prose-invert prose-p:leading-relaxed prose-pre:p-0"
             remarkPlugins={[remarkGfm, remarkMath]}
