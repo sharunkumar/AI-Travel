@@ -7,6 +7,8 @@ import { Textarea } from "~/components/ui/textarea";
 import { api } from "~/utils/api";
 import { useState } from "react";
 import { ReloadIcon } from "@radix-ui/react-icons";
+import { Toaster } from "~/components/ui/toaster";
+import { useToast } from "~/components/ui/use-toast";
 
 export default function Home() {
   const { data: sessionData } = useSession();
@@ -36,6 +38,8 @@ export default function Home() {
 
   const cancelCollab = api.gpt.cancelCollab.useMutation();
 
+  const { toast } = useToast();
+
   function newCollab() {
     createCollab.mutate(undefined, { onSuccess: () => refetch_colab() });
   }
@@ -45,9 +49,12 @@ export default function Home() {
   }
 
   function copyLink() {
-    navigator.clipboard.writeText(
-      `${window.location.protocol}//${window.location.host}/collab/${collab?.id}`
-    );
+    const link = `${window.location.protocol}//${window.location.host}/collab/${collab?.id}`;
+    navigator.clipboard.writeText(link);
+    toast({
+      title: "Collaboration link copied to clipboard!",
+      description: link,
+    });
   }
 
   return (
@@ -184,6 +191,7 @@ export default function Home() {
           </div>
         )}
       </main>
+      <Toaster />
     </>
   );
 }
