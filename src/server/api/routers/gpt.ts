@@ -145,6 +145,7 @@ export const gptRouter = createTRPCRouter({
           role: ChatCompletionRequestMessageRoleEnum.User,
           content: input.content,
           userId: sesh.host.id,
+          fromCollab: true,
         },
       });
       await getOpenAiCompletion(ctx.prisma, sesh.host.id);
