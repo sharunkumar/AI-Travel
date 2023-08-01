@@ -2,11 +2,20 @@ import { CodeBlock } from "~/lib/codeblock";
 import { MemoizedReactMarkdown } from "~/lib/markdown";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
+import { useEffect, useRef } from "react";
 
 export function AIChatBubble(props: { text: string }) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (ref.current) {
+      ref.current.scrollIntoView();
+    }
+  }, [ref]);
+
   return (
-    <div className="col-start-1 col-end-8 rounded-lg p-3">
-      <div className="flex flex-row items-center">
+    <div ref={ref} className="col-start-1 col-end-8 rounded-lg p-3">
+      <div className="flex flex-row items-start">
         <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border-2 border-solid border-indigo-500 dark:bg-indigo-500">
           AI
         </div>
@@ -61,9 +70,17 @@ export function AIChatBubble(props: { text: string }) {
 }
 
 export function UserChatBubble(props: { text: string }) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (ref.current) {
+      ref.current.scrollIntoView();
+    }
+  }, [ref]);
+
   return (
-    <div className="col-start-6 col-end-13 rounded-lg p-3">
-      <div className="flex flex-row-reverse items-center justify-start">
+    <div ref={ref} className="col-start-6 col-end-13 rounded-lg p-3">
+      <div className="flex flex-row-reverse items-start justify-start">
         <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border-2 border-solid border-indigo-800 dark:bg-indigo-800">
           Me
         </div>
