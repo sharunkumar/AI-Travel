@@ -109,7 +109,7 @@ export default function CollabPage() {
                 {thinking && (
                   <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
                 )}
-                {thinking ? "Sending" : "Send"}
+                {thinking ? "Thinking" : "Send"}
               </Button>
             </div>
           </div>

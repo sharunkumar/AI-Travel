@@ -155,7 +155,7 @@ export default function Home() {
                   {thinking && (
                     <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
                   )}
-                  {thinking ? "Sending" : "Send"}
+                  {thinking ? "Thinking" : "Send"}
                 </Button>
                 <Button
                   size={"lg"}
