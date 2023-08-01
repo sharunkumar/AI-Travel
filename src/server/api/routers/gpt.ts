@@ -33,39 +33,99 @@ export const gptRouter = createTRPCRouter({
     return "you can now see this secret message!";
   }),
 
-  // getCompletions: publicProcedure
-  //   .input(
-  //     z.object({
-  //       messages: z.array(
-  //         z.object({
-  //           role: z.enum(["system", "user", "assistant"]),
-  //           content: z.string(),
-  //         })
-  //       ),
-  //     })
-  //   )
-  //   .query(({ input }) => {
-  //     return input.messages;
-  //   }),
+  createCollab: protectedProcedure.mutation(async ({ ctx }) => {
+    await ctx.prisma.collaboration.upsert({
+      where: {
+        userId: ctx.session.user.id,
+      },
+      create: {
+        userId: ctx.session.user.id,
+      },
+      update: {},
+    });
+  }),
 
-  sendInput: publicProcedure
+  cancelCollab: protectedProcedure.mutation(async ({ ctx }) => {
+    await ctx.prisma.collaboration.delete({
+      where: {
+        userId: ctx.session.user.id,
+      },
+    });
+  }),
+
+  getCollab: protectedProcedure.query(async ({ ctx }) => {
+    return await ctx.prisma.collaboration.findFirst({
+      where: {
+        userId: ctx.session.user.id,
+      },
+      select: {
+        id: true,
+      },
+    });
+  }),
+
+  getCollabById: publicProcedure
+    .input(
+      z.object({
+        collabId: z.string(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      return await ctx.prisma.collaboration.findFirst({
+        where: {
+          id: input.collabId,
+        },
+        select: {
+          host: true,
+          id: true,
+        },
+      });
+    }),
+
+  sendInput: protectedProcedure
     .input(z.string())
     .mutation(async ({ input, ctx }) => {
       await ctx.prisma.chatMessage.create({
         data: {
           role: ChatCompletionRequestMessageRoleEnum.User,
           content: input,
-          userId: ctx.session?.user.id!,
+          userId: ctx.session.user.id,
         },
       });
 
-      await getOpenAiCompletion(ctx.prisma, ctx.session?.user.id!);
+      await getOpenAiCompletion(ctx.prisma, ctx.session.user.id);
     }),
 
-  clearChats: publicProcedure.mutation(async ({ input, ctx }) => {
+  sendInputToCollab: publicProcedure
+    .input(
+      z.object({
+        collabId: z.string(),
+        content: z.string(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const sesh = await ctx.prisma.collaboration.findFirstOrThrow({
+        where: {
+          id: input.collabId,
+        },
+        select: {
+          host: true,
+        },
+      });
+      await ctx.prisma.chatMessage.create({
+        data: {
+          role: ChatCompletionRequestMessageRoleEnum.User,
+          content: input.content,
+          userId: sesh.host.id,
+        },
+      });
+      await getOpenAiCompletion(ctx.prisma, sesh.host.id);
+    }),
+
+  clearChats: protectedProcedure.mutation(async ({ ctx }) => {
     await ctx.prisma.chatMessage.deleteMany({
       where: {
-        userId: ctx.session?.user.id,
+        userId: ctx.session.user.id,
       },
     });
   }),
@@ -90,14 +150,14 @@ export const gptRouter = createTRPCRouter({
       });
     }),
 
-  getChats: publicProcedure.query(({ ctx }) => {
+  getChats: protectedProcedure.query(({ ctx }) => {
     return ctx.prisma.chatMessage.findMany({
       select: {
         role: true,
         content: true,
       },
       where: {
-        userId: ctx.session?.user.id,
+        userId: ctx.session.user.id,
       },
     });
   }),
