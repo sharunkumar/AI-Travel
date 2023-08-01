@@ -1,5 +1,4 @@
 import Head from "next/head";
-import { signIn, signOut, useSession } from "next-auth/react";
 import { AIChatBubble, UserChatBubble } from "~/components/chat-bubbles";
 import { Button } from "~/components/ui/button";
 import { ModeToggle } from "~/components/ui/mode-toggle";
