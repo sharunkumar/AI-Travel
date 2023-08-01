@@ -44,6 +44,12 @@ export default function Home() {
     cancelCollab.mutate(undefined, { onSuccess: () => refetch_colab() });
   }
 
+  function copyLink() {
+    navigator.clipboard.writeText(
+      `${window.location.protocol}//${window.location.host}/collab/${collab?.id}`
+    );
+  }
+
   return (
     <>
       <Head>
@@ -72,9 +78,16 @@ export default function Home() {
             </Button>
             {sessionData &&
               (collab ? (
-                <Button variant={"secondary"} onClick={() => deleteCollab()}>
-                  Cancel Session
-                </Button>
+                <>
+                  <Button variant={"secondary"} onClick={() => deleteCollab()}>
+                    Cancel Session
+                  </Button>
+                  {collab.id && (
+                    <Button variant={"outline"} onClick={() => copyLink()}>
+                      Copy Link
+                    </Button>
+                  )}
+                </>
               ) : (
                 <Button variant={"secondary"} onClick={() => newCollab()}>
                   Invite someone
