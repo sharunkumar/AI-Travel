@@ -82,6 +82,34 @@ export const gptRouter = createTRPCRouter({
       });
     }),
 
+  getChatsInCollab: publicProcedure
+    .input(
+      z.object({
+        collabId: z.string(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      let sesh = await ctx.prisma.collaboration.findFirstOrThrow({
+        where: {
+          id: input.collabId,
+        },
+        select: {
+          userId: true,
+        },
+      });
+
+      return await ctx.prisma.chatMessage.findMany({
+        select: {
+          role: true,
+          content: true,
+          fromCollab: true,
+        },
+        where: {
+          userId: sesh.userId,
+        },
+      });
+    }),
+
   sendInput: protectedProcedure
     .input(z.string())
     .mutation(async ({ input, ctx }) => {
@@ -155,6 +183,7 @@ export const gptRouter = createTRPCRouter({
       select: {
         role: true,
         content: true,
+        fromCollab: true,
       },
       where: {
         userId: ctx.session.user.id,

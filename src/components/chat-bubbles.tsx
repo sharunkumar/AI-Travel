@@ -69,7 +69,10 @@ export function AIChatBubble(props: { text: string }) {
   );
 }
 
-export function UserChatBubble(props: { text: string }) {
+export function UserChatBubble(props: {
+  text: string;
+  message_from: "me" | "host" | "collab";
+}) {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -78,11 +81,25 @@ export function UserChatBubble(props: { text: string }) {
     }
   }, [ref]);
 
+  let circle = "Me";
+
+  switch (props.message_from) {
+    case "me":
+      circle = "Me";
+      break;
+    case "host":
+      circle = "H";
+      break;
+    case "collab":
+      circle = "C";
+      break;
+  }
+
   return (
     <div ref={ref} className="col-start-6 col-end-13 rounded-lg p-3">
       <div className="flex flex-row-reverse items-start justify-start">
         <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border-2 border-solid border-indigo-800 dark:bg-indigo-800">
-          Me
+          {circle}
         </div>
         <div className="relative mr-3 rounded-xl bg-zinc-900 px-4 py-4 text-sm shadow">
           <MemoizedReactMarkdown

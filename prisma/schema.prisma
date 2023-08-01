@@ -68,12 +68,13 @@ model VerificationToken {
 }
 
 model ChatMessage {
-    id        String   @id @default(cuid())
-    createdAt DateTime @default(now())
-    role      String
-    content   String
-    user      User     @relation(fields: [userId], references: [id])
-    userId    String
+    id         String   @id @default(cuid())
+    createdAt  DateTime @default(now())
+    role       String
+    content    String
+    user       User     @relation(fields: [userId], references: [id])
+    userId     String
+    fromCollab Boolean  @default(false)
 }
 
 model SystemRole {
