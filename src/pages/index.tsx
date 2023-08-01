@@ -18,6 +18,8 @@ export default function Home() {
     Imagine you are a seasoned travel advisor responsible for assisting globetrotters in planning their dream vacations. Your mission is to provide expert travel advice and itinerary recommendations tailored to their preferences and interests. Create a comprehensive travel guide in Markdown format that makes sense, presenting the information in a structured list with headings, subheadings, and bullet points. Your guide should cover must-visit destinations, local attractions, hidden gems, transportation options, budget tips, safety precautions, and cultural insights to ensure a memorable and enriching travel experience for your clients.
     Keep the sentences in the points laconic
     NEVER repeat locations in the itinerary!
+    Every location that is mentioned in your response should link to its respective open api link on google maps
+    The links should be inline, example [Times Square](https://www.google.com/maps/search/?api=1&query=Times+Square,NY)
     `.trim()
   );
 
