@@ -21,7 +21,7 @@ export function AIChatBubble(props: { text: string }) {
         </div>
         <div className="relative ml-3 rounded-xl bg-zinc-900 px-4 py-4 text-sm shadow">
           <MemoizedReactMarkdown
-            className="prose break-words dark:prose-invert prose-p:leading-relaxed prose-pre:p-0"
+            className="prose break-words dark:prose-invert sm:prose-sm md:prose-sm prose-p:leading-relaxed prose-pre:p-0"
             remarkPlugins={[remarkGfm, remarkMath]}
             components={{
               p({ children }) {
