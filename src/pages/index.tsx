@@ -6,6 +6,7 @@ import { ModeToggle } from "~/components/ui/mode-toggle";
 import { Textarea } from "~/components/ui/textarea";
 import { api } from "~/utils/api";
 import { useState } from "react";
+import { ReloadIcon } from "@radix-ui/react-icons";
 
 // const useMountEffect = (fun: any) => useEffect(fun, []);
 
@@ -34,6 +35,8 @@ export default function Home() {
   const clearChats = api.gpt.clearChats.useMutation();
 
   const [text, setText] = useState("");
+
+  const [thinking, setThinking] = useState(false);
 
   // console.log({ messages });
 
@@ -85,31 +88,42 @@ export default function Home() {
             <div className="container p-8">
               <div className="flex flex-row items-center gap-2">
                 <Textarea
-                  placeholder="Type your message here."
+                  placeholder={"Type your message here."}
+                  disabled={thinking}
                   value={text}
                   onChange={(e) => setText(e.target.value)}
                 />
                 <Button
                   size={"lg"}
                   className="grow"
-                  disabled={text.trim() == ""}
+                  disabled={thinking || text.trim() == ""}
                   onClick={(e) => {
                     e.preventDefault();
+                    setThinking(true);
+                    messages?.push({
+                      role: "user",
+                      content: text,
+                    });
                     setText("");
                     completion.mutate(text, {
                       onSuccess: async () => {
                         refetch_chats();
-                        // executeScroll();
+                        setThinking(false);
                       },
                     });
                   }}
                 >
-                  Send
+                  {thinking && (
+                    <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                  )}
+                  {thinking ? "Sending" : "Send"}
                 </Button>
                 <Button
                   size={"lg"}
                   variant={"destructive"}
-                  className={`${messages?.length! > 0 ? "" : "hidden"} grow`}
+                  className={`${
+                    !thinking && messages?.length! > 0 ? "" : "hidden"
+                  } grow`}
                   disabled={messages?.length == 0}
                   onClick={(e) => {
                     e.preventDefault();
