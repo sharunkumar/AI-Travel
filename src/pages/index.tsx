@@ -192,7 +192,7 @@ export default function Home() {
               className="text-lg"
               onClick={() => signIn()}
             >
-              Please log in to continue
+              Log in to continue
             </Button>
           </div>
         )}
