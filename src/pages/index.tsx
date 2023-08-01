@@ -181,9 +181,13 @@ export default function Home() {
             </div>
           </>
         ) : (
-          <div className="flex grow items-center justify-center align-middle text-4xl">
+          <div className="flex grow flex-col items-center justify-center gap-12 align-middle text-4xl">
+            <h1 className="text-5xl">
+              <span className="text-[hsl(280,100%,70%)]">Collaborative</span>{" "}
+              trip planning, made easy
+            </h1>
             <Button
-              variant="ghost"
+              variant="outline"
               size={"lg"}
               className="text-lg"
               onClick={() => signIn()}
