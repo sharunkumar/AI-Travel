@@ -1,4 +1,9 @@
 export function AIChatBubble(props: { text: string }) {
+  try {
+    let js = JSON.parse(props.text);
+    console.log(js);
+  } catch (e) {}
+
   return (
     <div className="col-start-1 col-end-8 rounded-lg p-3">
       <div className="flex flex-row items-center">

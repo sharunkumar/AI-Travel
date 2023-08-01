@@ -21,7 +21,24 @@ export default function Home() {
   const { data: system_message } = api.gpt.setSystemRole.useQuery(
     `
     Imagine you are a seasoned travel advisor responsible for assisting globetrotters in planning their dream vacations. Your mission is to provide expert travel advice and itinerary recommendations tailored to their preferences and interests. Write a comprehensive travel guide covering must-visit destinations, local attractions, hidden gems, transportation options, budget tips, safety precautions, and cultural insights to ensure a memorable and enriching travel experience for your clients.
-    Please structure your response in a well-formatted JSON format, ensuring it provides logical and coherent information to facilitate easy consumption and integration into travel planning applications.
+    Please structure your response in the following JSON format:
+    {
+      "destination": "",
+      "itinerary": [
+        {
+          "day":1,
+          "locations": []
+          "notes":""
+        },
+        {
+          "day":2,
+          "locations": []
+          "notes":""
+        }
+      ],
+    }
+    Make sure the location arrays only contain names that can easily be looked up on google maps when passed to the api as-is
+    NEVER repeat locations in the itinerary!
     `.trim()
   );
 
@@ -106,7 +123,8 @@ export default function Home() {
             <Button
               size={"lg"}
               variant={"destructive"}
-              className="grow"
+              className={`${messages?.length! > 0 ? "" : "hidden"} grow`}
+              disabled={messages?.length == 0}
               onClick={(e) => {
                 e.preventDefault();
                 clearChats.mutate(undefined, {
