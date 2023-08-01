@@ -21,6 +21,7 @@ export default function Home() {
   const { data: system_message } = api.gpt.setSystemRole.useQuery(
     `
     Imagine you are a seasoned travel advisor responsible for assisting globetrotters in planning their dream vacations. Your mission is to provide expert travel advice and itinerary recommendations tailored to their preferences and interests. Create a comprehensive travel guide in Markdown format that makes sense, presenting the information in a structured list with headings, subheadings, and bullet points. Your guide should cover must-visit destinations, local attractions, hidden gems, transportation options, budget tips, safety precautions, and cultural insights to ensure a memorable and enriching travel experience for your clients.
+    Keep the sentences in the points laconic
     NEVER repeat locations in the itinerary!
     `.trim()
   );
@@ -65,62 +66,77 @@ export default function Home() {
             <ModeToggle />
           </div>
         </nav>
-        <div className="grow gap-10 overflow-y-auto px-96">
-          <div style={{ display: "none" }}>{system_message?.content}</div>
-          {messages?.map((msg, idx) => {
-            switch (msg.role) {
-              case "user":
-                return <UserChatBubble key={idx} text={msg.content} />;
-              case "assistant":
-                return <AIChatBubble key={idx} text={msg.content} />;
-            }
+        {sessionData ? (
+          <>
+            <div className="grow gap-10 overflow-y-auto px-96">
+              <div style={{ display: "none" }}>{system_message?.content}</div>
+              {messages?.map((msg, idx) => {
+                switch (msg.role) {
+                  case "user":
+                    return <UserChatBubble key={idx} text={msg.content} />;
+                  case "assistant":
+                    return <AIChatBubble key={idx} text={msg.content} />;
+                }
 
-            return <></>;
-          })}
-          {/* <hr ref={myRef} /> */}
-        </div>
-        <div className="container p-8">
-          <div className="flex flex-row items-center gap-2">
-            <Textarea
-              placeholder="Type your message here."
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-            />
+                return <></>;
+              })}
+              {/* <hr ref={myRef} /> */}
+            </div>
+            <div className="container p-8">
+              <div className="flex flex-row items-center gap-2">
+                <Textarea
+                  placeholder="Type your message here."
+                  value={text}
+                  onChange={(e) => setText(e.target.value)}
+                />
+                <Button
+                  size={"lg"}
+                  className="grow"
+                  disabled={text.trim() == ""}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setText("");
+                    completion.mutate(text, {
+                      onSuccess: async () => {
+                        refetch_chats();
+                        // executeScroll();
+                      },
+                    });
+                  }}
+                >
+                  Send
+                </Button>
+                <Button
+                  size={"lg"}
+                  variant={"destructive"}
+                  className={`${messages?.length! > 0 ? "" : "hidden"} grow`}
+                  disabled={messages?.length == 0}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    clearChats.mutate(undefined, {
+                      onSuccess: () => {
+                        refetch_chats();
+                      },
+                    });
+                  }}
+                >
+                  Clear
+                </Button>
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className="flex grow items-center justify-center align-middle text-4xl">
             <Button
+              variant="ghost"
               size={"lg"}
-              className="grow"
-              disabled={text.trim() == ""}
-              onClick={(e) => {
-                e.preventDefault();
-                setText("");
-                completion.mutate(text, {
-                  onSuccess: async () => {
-                    refetch_chats();
-                    // executeScroll();
-                  },
-                });
-              }}
+              className="text-lg"
+              onClick={() => signIn()}
             >
-              Send
-            </Button>
-            <Button
-              size={"lg"}
-              variant={"destructive"}
-              className={`${messages?.length! > 0 ? "" : "hidden"} grow`}
-              disabled={messages?.length == 0}
-              onClick={(e) => {
-                e.preventDefault();
-                clearChats.mutate(undefined, {
-                  onSuccess: () => {
-                    refetch_chats();
-                  },
-                });
-              }}
-            >
-              Clear
+              Please log in to continue
             </Button>
           </div>
-        </div>
+        )}
       </main>
     </>
   );
