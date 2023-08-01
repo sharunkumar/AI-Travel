@@ -29,10 +29,6 @@ export const gptRouter = createTRPCRouter({
       };
     }),
 
-  getAll: publicProcedure.query(({ ctx }) => {
-    return ctx.prisma.example.findMany();
-  }),
-
   getSecretMessage: protectedProcedure.query(() => {
     return "you can now see this secret message!";
   }),
@@ -59,14 +55,19 @@ export const gptRouter = createTRPCRouter({
         data: {
           role: ChatCompletionRequestMessageRoleEnum.User,
           content: input,
+          userId: ctx.session?.user.id!,
         },
       });
 
-      await getOpenAiCompletion(ctx.prisma);
+      await getOpenAiCompletion(ctx.prisma, ctx.session?.user.id!);
     }),
 
   clearChats: publicProcedure.mutation(async ({ input, ctx }) => {
-    await ctx.prisma.chatMessage.deleteMany();
+    await ctx.prisma.chatMessage.deleteMany({
+      where: {
+        userId: ctx.session?.user.id,
+      },
+    });
   }),
 
   setSystemRole: publicProcedure
@@ -95,6 +96,9 @@ export const gptRouter = createTRPCRouter({
         role: true,
         content: true,
       },
+      where: {
+        userId: ctx.session?.user.id,
+      },
     });
   }),
 });
@@ -106,7 +110,8 @@ export const gptRouter = createTRPCRouter({
 // }
 
 async function getOpenAiCompletion(
-  prisma: PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>
+  prisma: PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>,
+  userId: string
 ) {
   const sys = await prisma.systemRole.findFirst({
     select: { role: true, content: true },
@@ -120,6 +125,9 @@ async function getOpenAiCompletion(
     select: {
       role: true,
       content: true,
+    },
+    where: {
+      userId,
     },
   });
 
@@ -144,6 +152,7 @@ async function getOpenAiCompletion(
     data: {
       role: ai_msg.role,
       content: ai_msg.content!,
+      userId,
     },
   });
 
