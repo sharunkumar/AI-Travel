@@ -1,6 +1,6 @@
 # AI Travel
 
-NU-MGEN Generative AI Hackathon Project
+NU-MGEN Generative AI Hackathon Project: 3rd Place 🏆
 
 This project showcases a collaborative trip planning web app powered using OpenAI
 
